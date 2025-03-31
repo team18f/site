@@ -17,10 +17,10 @@ on:
         required: false
         default: main
         type: string
-    secrets:
-      token:
-        description: Access token with read access to the 18F.org repo
-        required: true
+    # secrets:
+    #   token:
+    #     description: Access token with read access to the 18F.org repo
+    #     required: true
     outputs:
       path:
         description: Cache path for this built repo
@@ -49,7 +49,7 @@ jobs:
         with:
           repository: ${{ inputs.repo }}
           ref: ${{ inputs.branch }}
-          token: ${{ secrets.token }}
+          # token: ${{ secrets.token }}
 
       - name: compute cache key
         id: key

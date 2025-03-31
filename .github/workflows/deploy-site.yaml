@@ -14,8 +14,8 @@ jobs:
   build:
     name: build
     uses: ./.github/workflows/build-artifacts.yaml
-    secrets:
-      CLONE_PAT: ${{ secrets.CLONE_PAT }}
+    # secrets:
+    #   CLONE_PAT: ${{ secrets.CLONE_PAT }}
 
   deploy:
     name: deploy
