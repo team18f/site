@@ -15,9 +15,9 @@ on:
         description: 18F blog branch to build
         type: string
         default: main
-    # secrets:
-    #   CLONE_PAT:
-    #     required: true
+    secrets:
+      CLONE_PAT:
+        required: true
 
   workflow_dispatch:
     inputs:
@@ -49,8 +49,8 @@ jobs:
     with:
       repo: team18f/18f.org
       branch: ${{ inputs.branch_18forg }}
-    # secrets:
-    #   token: ${{ secrets.CLONE_PAT }}
+    secrets:
+      token: ${{ secrets.CLONE_PAT }}
 
   build-18f-guides:
     name: build 18F guides
@@ -59,8 +59,8 @@ jobs:
       repo: team18f/guides
       branch: ${{ inputs.branch_guides }}
       base-url: /guides/
-    # secrets:
-    #   token: ${{ secrets.CLONE_PAT }}
+    secrets:
+      token: ${{ secrets.CLONE_PAT }}
 
   build-18f-blog:
     name: build 18F blog
@@ -69,8 +69,8 @@ jobs:
       repo: team18f/18f.gsa.gov
       branch: ${{ inputs.branch_blog }}
       base-url: /blog/
-    # secrets:
-    #   token: ${{ secrets.CLONE_PAT }}
+    secrets:
+      token: ${{ secrets.CLONE_PAT }}
       
   bundle:
     needs:
@@ -104,10 +104,10 @@ jobs:
         run: |
           mv ${{ needs.build-18f-org.outputs.path }} _site
           mv ${{ needs.build-18f-guides.outputs.path }} _site/guides
+          mv ${{ needs.build-18f-blog.outputs.path }} _site/blog
   
       - name: upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: _site
           path: _site
-          retention-days: 1
