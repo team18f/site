@@ -1,0 +1,113 @@
+name: build site as artifacts
+
+on:
+  workflow_call:
+    inputs:
+      branch_18forg:
+        description: 18F.org branch to build
+        type: string
+        default: main
+      branch_guides:
+        description: 18F guides branch to build
+        type: string
+        default: main
+      branch_blog:
+        description: 18F blog branch to build
+        type: string
+        default: main
+    secrets:
+      CLONE_PAT:
+        required: true
+
+  workflow_dispatch:
+    inputs:
+      branch_18forg:
+        description: 18F.org branch to build
+        required: true
+        type: string
+        default: main
+      branch_guides:
+        description: 18F guides branch to build
+        required: true
+        type: string
+        default: main
+      branch_blog:
+        description: 18F blog branch to build
+        required: true
+        type: string
+        default: main
+    
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-18f-org:
+    name: build 18F.org
+    uses: ./.github/workflows/build-repo.yaml
+    with:
+      repo: team18f/18f.org
+      branch: ${{ inputs.branch_18forg }}
+    secrets:
+      token: ${{ secrets.CLONE_PAT }}
+
+  build-18f-guides:
+    name: build 18F guides
+    uses: ./.github/workflows/build-repo.yaml
+    with:
+      repo: team18f/guides
+      branch: ${{ inputs.branch_guides }}
+      base-url: /guides/
+    secrets:
+      token: ${{ secrets.CLONE_PAT }}
+
+  build-18f-blog:
+    name: build 18F blog
+    uses: ./.github/workflows/build-repo.yaml
+    with:
+      repo: team18f/18f.gsa.gov
+      branch: ${{ inputs.branch_blog }}
+      base-url: /blog/
+    secrets:
+      token: ${{ secrets.CLONE_PAT }}
+      
+  bundle:
+    needs:
+      - build-18f-org
+      - build-18f-guides
+      - build-18f-blog
+
+    name: bundle and store
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: get 18f.org
+        uses: actions/cache@v4
+        with:
+          key: ${{ needs.build-18f-org.outputs.key }}
+          path: ${{ needs.build-18f-org.outputs.path }}
+
+      - name: get 18F guides
+        uses: actions/cache@v4
+        with:
+          key: ${{ needs.build-18f-guides.outputs.key }}
+          path: ${{ needs.build-18f-guides.outputs.path }}
+
+      - name: get 18F blog
+        uses: actions/cache@v4
+        with:
+          key: ${{ needs.build-18f-blog.outputs.key }}
+          path: ${{ needs.build-18f-blog.outputs.path }}
+  
+      - name: move files around
+        run: |
+          mv ${{ needs.build-18f-org.outputs.path }} _site
+          mv ${{ needs.build-18f-guides.outputs.path }} _site/guides
+  
+      - name: upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: _site
+          path: _site
+          retention-days: 1
