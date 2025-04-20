@@ -8,11 +8,6 @@ on:
       token:
         required: true
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
   deploy:
     name: deploy an 18f.org site
