@@ -8,6 +8,6 @@ on:
 jobs:
   deploy:
     name: deploy
-    uses: team18f/site/.github/workflows/deploy.yaml
+    uses: team18f/site/.github/workflows/deploy.yaml@main
     secrets:
       token: ${{ secrets.CLONE_PAT }}
