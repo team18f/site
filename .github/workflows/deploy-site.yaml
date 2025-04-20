@@ -9,5 +9,7 @@ jobs:
   deploy:
     name: deploy
     uses: team18f/site/.github/workflows/deploy.yaml@main
+    with:
+      repo: team18f/18f.org
     secrets:
       token: ${{ secrets.CLONE_PAT }}
